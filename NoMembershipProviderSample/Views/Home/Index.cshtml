@@ -1,0 +1,29 @@
+﻿@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+@if (User.Identity.IsAuthenticated)
+{
+    <p>You are logged in</p>
+    <dl>
+        <dt>Username</dt>
+        <dd>@User.Identity.Name</dd>
+        <dt>Authentication Type</dt>
+        <dd>@User.Identity.AuthenticationType</dd>
+        <dt>Is Administrator?</dt>
+        <dd>@User.IsInRole("Administrator")</dd>
+    </dl>
+}
+else
+{
+    <p>You are not logged in</p>
+}
+
+<ul>
+    <li>@Html.ActionLink("Login", "Login")</li>
+    <li>@Html.ActionLink("Logout", "Logout")</li>
+    <li>@Html.ActionLink("Test authorized", "SimpleAuthorization")</li>
+    <li>@Html.ActionLink("Test auth as flytzen", "AuthorizedAsFlytzen")</li>
+    <li>@Html.ActionLink("Test auth as administrator role", "AuthorizedAsAdministrator")</li>
+</ul>
