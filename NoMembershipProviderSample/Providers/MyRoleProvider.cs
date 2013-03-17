@@ -11,7 +11,7 @@ namespace NoMembershipProviderSample.Providers
 
         public override string[] GetRolesForUser(string username)
         {
-            throw new System.NotImplementedException();
+            return new[] {"Administrator"};
         }
 
         public override void CreateRole(string roleName)
