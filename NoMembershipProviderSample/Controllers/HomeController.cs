@@ -1,9 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
+using NoMembershipProviderSample.Models;
 
 namespace NoMembershipProviderSample.Controllers
 {
@@ -24,10 +22,22 @@ namespace NoMembershipProviderSample.Controllers
         }
 
         [HttpPost]
-        public ActionResult Login(string userName)
+        public ActionResult Login(string userName, string password, string returnUrl)
         {
-            FormsAuthentication.SetAuthCookie("flytzen", false);
-            return RedirectToAction("Index");
+            var repo = new AccountRepository();
+
+            var user = repo.FindByName(userName);
+            if (user != null && user.ValidatePassword(password))
+            {
+                FormsAuthentication.SetAuthCookie(userName, false);
+                if (returnUrl != null && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                else
+                    return RedirectToAction("Index");
+            }
+            
+            ModelState.AddModelError("", "Invalid user name or password");
+            return View();
         }
 
         public ActionResult Logout()
@@ -54,6 +64,25 @@ namespace NoMembershipProviderSample.Controllers
             return this.Content("You are authorized as an administrator");
         }
 
+        [HttpGet]
+        public ActionResult CreateUser()
+        {
+            return this.View();
+        }
+
+        [HttpPost]
+        public ActionResult CreateUser(string userName, string password, string roles)
+        {
+            var newUser = new Account()
+                {
+                    UserName = userName,
+                    Roles = (String.IsNullOrWhiteSpace(roles) ? new string[0] : roles.Split(','))
+                };
+            newUser.SetPassword(password);
+            var repo = new AccountRepository();
+            repo.AddAccount(newUser);
+            return RedirectToAction("Index");
+        }
 
     }
 }
